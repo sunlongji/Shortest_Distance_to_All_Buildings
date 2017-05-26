@@ -1,0 +1,65 @@
+package problem317;
+import java.util.*;
+
+public class Solution {
+	public int shortestDistance(int[][] grid){
+		if(grid==null||grid[0].length==0)	return 0;
+		final int[][] dirs=new int[][]{{-1,0},{1,0},{0,-1},{0,1}};
+		
+		int row=grid.length, col=grid[0].length;
+		int[][] distance=new int[row][col];
+		int[][] reach=new int[row][col];
+		
+		int buildingNum=0;
+		
+		for(int i=0;i<row;i++){
+			for(int j=0;j<col;j++){
+				if(grid[i][j]==1){
+					buildingNum++;
+					Queue<int[]> queue=new LinkedList<int[]>();
+					queue.offer(new int[]{i,j});
+					
+					boolean[][] isVisited=new boolean[row][col];
+					int level=1;
+					
+					while(!queue.isEmpty()){
+						int qSize=queue.size();
+						for(int q=0;q<qSize;q++){
+							int[] cur=queue.poll();
+							for(int k=0;k<4;k++){
+								int r=cur[0]+dirs[k][0];
+								int c=cur[1]+dirs[k][1];
+								
+								if(r>=0&&r<row&&c>=0&&c<col
+										&&grid[r][c]==0&&!isVisited[r][c]){
+									distance[r][c]+=level;
+									reach[r][c]++;
+									
+									isVisited[r][c]=true;
+									queue.offer(new int[]{r,c});
+								}
+							}
+						}
+						level++;
+					}
+				}
+			}
+		}
+		
+		int res=Integer.MAX_VALUE;
+		for(int i=0;i<row;i++){
+			for(int j=0;j<col;j++){
+				if(grid[i][j]==0&&reach[i][j]==buildingNum){
+					res=Math.min(res, distance[i][j]);
+				}
+			}
+		}
+		return res==Integer.MAX_VALUE?-1:res;
+	}
+	
+	public static void main(String[] args){
+		int[][] grid={{1,0,2,0,1},{0,0,0,0,0},{0,0,1,0,0}};
+		int res=new Solution().shortestDistance(grid);
+		System.out.println(res);
+	}
+}
